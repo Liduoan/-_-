@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/姿态识别.iml" filepath="$PROJECT_DIR$/.idea/姿态识别.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/allin.iml" filepath="$PROJECT_DIR$/.idea/allin.iml" />
     </modules>
   </component>
 </project>
