@@ -1,25 +1,25 @@
 from flask import Flask, render_template, Response
 import cv2
-import mediapipe as mp
+# import mediapipe as mp
 # 导入solution
-mp_pose = mp.solutions.pose
+# mp_pose = mp.solutions.pose
 
 # 导入绘图函数
-mp_drawing = mp.solutions.drawing_utils
+# mp_drawing = mp.solutions.drawing_utils
 # 参数：1、颜色，2、线条粗细，3、点的半径
-DrawingSpec_point = mp_drawing.DrawingSpec((0, 255, 0), 3, 1)
-DrawingSpec_line = mp_drawing.DrawingSpec((0, 0, 255), 3, 1)
+# DrawingSpec_point = mp_drawing.DrawingSpec((0, 255, 0), 3, 1)
+# DrawingSpec_line = mp_drawing.DrawingSpec((0, 0, 255), 3, 1)
 
 # 导入模型
-pose_mode = mp_pose.Pose(smooth_landmarks=True,
-                         min_detection_confidence=0.5,
-                         min_tracking_confidence=0.5)
+# pose_mode = mp_pose.Pose(smooth_landmarks=True,
+#                          min_detection_confidence=0.5,
+#                          min_tracking_confidence=0.5)
 def process_frame(img):
     # BGR转RGB
     # img_RGB = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    results = pose_mode.process(img)
-    mp_drawing.draw_landmarks(
-        img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS, DrawingSpec_point, DrawingSpec_line)
+    # results = pose_mode.process(img)
+    # mp_drawing.draw_landmarks(
+    #     img, results.pose_landmarks, mp_pose.POSE_CONNECTIONS, DrawingSpec_point, DrawingSpec_line)
     return img
 
 class VideoCamera(object):
