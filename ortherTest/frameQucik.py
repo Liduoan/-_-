@@ -1,6 +1,6 @@
 import multiprocessing as mp
 import cv2
-import dlib
+# import dlib
 
 
 def detect_face(frame, value):

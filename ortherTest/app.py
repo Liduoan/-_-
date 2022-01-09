@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, render_template, Response
 
 # Copyright 2021 The TensorFlow Authors. All Rights Reserved.
@@ -20,10 +22,7 @@ import sys
 import time
 import multiprocessing as mp
 import cv2
-from ml import Classifier
 from ml import Movenet
-from ml import MoveNetMultiPose
-from ml import Posenet
 import utils
 
 
@@ -92,12 +91,33 @@ def run(estimation_model: str, tracker_type: str, classification_model: str,
 
     # Continuously capture images from the camera and run inference
     while cap.isOpened():
-        print("检验视频流中....")
+        # print("检验视频流中....")
         counter += 1
 
         # process 1
         # 如果想要逐帧处理，那就用pass，如果想跳帧就选择上面两句
         if (res1.is_alive()):
+            # # 从队列中获取图片 修正 输出
+            # image = q.get()
+            # image = cv2.resize(image, (width, height))
+            # # Calculate the FPS
+            # if counter % fps_avg_frame_count == 0:
+            #     end_time = time.time()
+            #     fps = fps_avg_frame_count / (end_time - start_time)
+            #     start_time = time.time()
+            #
+            # # Show the FPS
+            # fps_text = 'FPS = ' + str(int(fps))
+            # text_location = (left_margin, row_size)
+            # cv2.putText(image, fps_text, text_location, cv2.FONT_HERSHEY_PLAIN,
+            #             font_size, text_color, font_thickness)
+            #
+            # ret, jpeg = cv2.imencode('.jpg', image)
+            # yield (b'--frame\r\n'
+            #        b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+            # ret, image1 = cap.read()
+            pass
+        else:
             # 从队列中获取图片 修正 输出
             image = q.get()
             image = cv2.resize(image, (width, height))
@@ -117,16 +137,34 @@ def run(estimation_model: str, tracker_type: str, classification_model: str,
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
             ret, image1 = cap.read()
-        else:
-            ret, image1 = cap.read()
             image1 = cv2.resize(image1, (int(width * 0.3), int(height * 0.3)))
-        res1 = mp.Process(target=modelTrain, args=(pose_detector, image1, q))
-        res1.start()
+            res1 = mp.Process(target=modelTrain, args=(pose_detector, image1, q))
+            res1.start()
 
         # process 2
         # 如果想要逐帧处理，那就用pass，如果想跳帧就选择上面两句
         if (res2.is_alive()):
-            # 从队列中获取图片 修正 输出
+            # # 从队列中获取图片 修正 输出
+            # image = q.get()
+            # image = cv2.resize(image, (width, height))
+            # # Calculate the FPS
+            # if counter % fps_avg_frame_count == 0:
+            #     end_time = time.time()
+            #     fps = fps_avg_frame_count / (end_time - start_time)
+            #     start_time = time.time()
+            #
+            # # Show the FPS
+            # fps_text = 'FPS = ' + str(int(fps))
+            # text_location = (left_margin, row_size)
+            # cv2.putText(image, fps_text, text_location, cv2.FONT_HERSHEY_PLAIN,
+            #             font_size, text_color, font_thickness)
+            #
+            # ret, jpeg = cv2.imencode('.jpg', image)
+            # yield (b'--frame\r\n'
+            #        b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+            # ret, image2 = cap.read()
+            pass
+        else:
             image = q.get()
             image = cv2.resize(image, (width, height))
             # Calculate the FPS
@@ -145,11 +183,9 @@ def run(estimation_model: str, tracker_type: str, classification_model: str,
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
             ret, image2 = cap.read()
-        else:
-            ret, image2 = cap.read()
             image2 = cv2.resize(image2, (int(width * 0.3), int(height * 0.3)))
-        res2 = mp.Process(target=modelTrain, args=(pose_detector, image2, q))
-        res2.start()
+            res2 = mp.Process(target=modelTrain, args=(pose_detector, image2, q))
+            res2.start()
 
 
 
@@ -199,12 +235,12 @@ def video_feed():
         '--frameWidth',
         help='Width of frame to capture from camera.',
         required=False,
-        default=550)
+        default=450)
     parser.add_argument(
         '--frameHeight',
         help='Height of frame to capture from camera.',
         required=False,
-        default=300)
+        default=330)
     args = parser.parse_args()
     print("video_feed方法完成中....")
     return Response(run(args.model, args.tracker, args.classifier, args.label_file,

@@ -109,17 +109,17 @@ def visualize(
         cv2.line(image, keypoints[edge_pair[0]].coordinate,
                  keypoints[edge_pair[1]].coordinate, edge_color, 2)
 
-    # Draw bounding_box with multipose
-    if bounding_box is not None:
-      start_point = bounding_box.start_point
-      end_point = bounding_box.end_point
-      cv2.rectangle(image, start_point, end_point, person_color, 2)
-      # Draw id text when tracker is enabled for MoveNet MultiPose model.
-      # (id = None when using single pose model or when tracker is None)
-      if person.id:
-        id_text = 'id = ' + str(person.id)
-        cv2.putText(image, id_text, start_point, cv2.FONT_HERSHEY_PLAIN, 1,
-                    (0, 0, 255), 1)
+    # # Draw bounding_box with multipose
+    # if bounding_box is not None:
+    #   start_point = bounding_box.start_point
+    #   end_point = bounding_box.end_point
+    #   cv2.rectangle(image, start_point, end_point, person_color, 2)
+    #   # Draw id text when tracker is enabled for MoveNet MultiPose model.
+    #   # (id = None when using single pose model or when tracker is None)
+    #   if person.id:
+    #     id_text = 'id = ' + str(person.id)
+    #     cv2.putText(image, id_text, start_point, cv2.FONT_HERSHEY_PLAIN, 1,
+    #                 (0, 0, 255), 1)
 
   return image
 

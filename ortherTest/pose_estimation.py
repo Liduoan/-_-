@@ -18,10 +18,7 @@ import sys
 import time
 
 import cv2
-from ml import Classifier
 from ml import Movenet
-from ml import MoveNetMultiPose
-from ml import Posenet
 import utils
 
 
@@ -42,25 +39,12 @@ def run(estimation_model: str, tracker_type: str, classification_model: str,
     height: The height of the frame captured from the camera.
   """
 
-  # Notify users that tracker is only enabled for MoveNet MultiPose model.
-  if tracker_type and (estimation_model != 'movenet_multipose'):
-    logging.warning(
-        'No tracker will be used as tracker can only be enabled for '
-        'MoveNet MultiPose model.')
-
   # Initialize the pose estimator selected.
-  if estimation_model in ['movenet_lightning', 'movenet_thunder']:
-    pose_detector = Movenet(estimation_model)
-  elif estimation_model == 'posenet':
-    pose_detector = Posenet(estimation_model)
-  elif estimation_model == 'movenet_multipose':
-    pose_detector = MoveNetMultiPose(estimation_model, tracker_type)
-  else:
-    sys.exit('ERROR: Model is not supported.')
+  pose_detector = Movenet(estimation_model)
 
   # Variables to calculate FPS
-  counter, fps = 0, 0
-  start_time = time.time()
+  # counter, fps = 0, 0
+  # start_time = time.time()
 
   # Start capturing video input from the camera
   cap = cv2.VideoCapture(camera_id)
@@ -68,66 +52,62 @@ def run(estimation_model: str, tracker_type: str, classification_model: str,
   cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
 
   # Visualization parameters
-  row_size = 20  # pixels
-  left_margin = 24  # pixels
-  text_color = (0, 0, 255)  # red
-  font_size = 1
-  font_thickness = 1
-  max_detection_results = 3
-  fps_avg_frame_count = 10
+  # row_size = 20  # pixels
+  # left_margin = 24  # pixels
+  # text_color = (0, 0, 255)  # red
+  # font_size = 1
+  # font_thickness = 1
+  # max_detection_results = 3
+  # fps_avg_frame_count = 10
 
   # Initialize the classification model
-  if classification_model:
-    classifier = Classifier(classification_model, label_file)
-    detection_results_to_show = min(max_detection_results,
-                                    len(classifier.pose_class_names))
+  # if classification_model:
+  #   classifier = Classifier(classification_model, label_file)
+  #   detection_results_to_show = min(max_detection_results,
+  #                                   len(classifier.pose_class_names))
 
   # Continuously capture images from the camera and run inference
   while cap.isOpened():
     success, image = cap.read()
-    if not success:
-      sys.exit(
-          'ERROR: Unable to read from webcam. Please verify your webcam settings.'
-      )
+    # if not success:
+    #   sys.exit(
+    #       'ERROR: Unable to read from webcam. Please verify your webcam settings.'
+    #   )
 
-    counter += 1
-    image = cv2.flip(image, 1)
+    # counter += 1
+    # image = cv2.flip(image, 1)
 
-    if estimation_model == 'movenet_multipose':
-      # Run pose estimation using a MultiPose model.
-      list_persons = pose_detector.detect(image)
-    else:
       # Run pose estimation using a SinglePose model, and wrap the result in an
       # array.
-      list_persons = [pose_detector.detect(image)]
+    list_persons = [pose_detector.detect(image)]
 
     # Draw keypoints and edges on input image
     image = utils.visualize(image, list_persons)
 
-    if classification_model:
-      # Run pose classification
-      prob_list = classifier.classify_pose(list_persons[0])
-
-      # Show classification results on the image
-      for i in range(detection_results_to_show):
-        class_name = prob_list[i].label
-        probability = round(prob_list[i].score, 2)
-        result_text = class_name + ' (' + str(probability) + ')'
-        text_location = (left_margin, (i + 2) * row_size)
-        cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
-                    font_size, text_color, font_thickness)
+    # if classification_model:
+    #   # Run pose classification
+    #   prob_list = classifier.classify_pose(list_persons[0])
+    #
+    #   # Show classification results on the image
+    #   for i in range(detection_results_to_show):
+    #     class_name = prob_list[i].label
+    #     probability = round(prob_list[i].score, 2)
+    #     result_text = class_name + ' (' + str(probability) + ')'
+    #     text_location = (left_margin, (i + 2) * row_size)
+    #     cv2.putText(image, result_text, text_location, cv2.FONT_HERSHEY_PLAIN,
+    #                 font_size, text_color, font_thickness)
 
     # Calculate the FPS
-    if counter % fps_avg_frame_count == 0:
-      end_time = time.time()
-      fps = fps_avg_frame_count / (end_time - start_time)
-      start_time = time.time()
+    # if counter % fps_avg_frame_count == 0:
+    #   end_time = time.time()
+    #   fps = fps_avg_frame_count / (end_time - start_time)
+    #   start_time = time.time()
 
     # Show the FPS
-    fps_text = 'FPS = ' + str(int(fps))
-    text_location = (left_margin, row_size)
-    cv2.putText(image, fps_text, text_location, cv2.FONT_HERSHEY_PLAIN,
-                font_size, text_color, font_thickness)
+    # fps_text = 'FPS = ' + str(int(fps))
+    # text_location = (left_margin, row_size)
+    # cv2.putText(image, fps_text, text_location, cv2.FONT_HERSHEY_PLAIN,
+    #             font_size, text_color, font_thickness)
 
     # Stop the program if the ESC key is pressed.
     if cv2.waitKey(1) == 27:
